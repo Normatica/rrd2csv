@@ -43,7 +43,8 @@ static void
 permute(struct optparse *options, int index)
 {
     char *nonoption = options->argv[index];
-    for (int i = index; i < options->optind - 1; i++)
+    int i=0;
+    for (i = index; i < options->optind - 1; i++)
         options->argv[i] = options->argv[i + 1];
     options->argv[options->optind - 1] = nonoption;
 }
@@ -147,7 +148,8 @@ static size_t
 optstring_length(const struct optparse_long *longopts)
 {
     int length = 0;
-    for (int i = 0; !longopts_end(longopts, i); i++, length++)
+    int i = 0;
+    for (i = 0; !longopts_end(longopts, i); i++, length++)
         length += longopts[i].argtype;
     return length + 1;
 }
@@ -156,10 +158,13 @@ static void
 optstring_from_long(const struct optparse_long *longopts, char *optstring)
 {
     char *p = optstring;
-    for (int i = 0; !longopts_end(longopts, i); i++) {
+    int i = 0;
+    for (i = 0; !longopts_end(longopts, i); i++) {
         if (longopts[i].shortname) {
             *p++ = longopts[i].shortname;
-            for (unsigned int a = 0; a < longopts[i].argtype; a++)
+
+            unsigned int a = 0;
+            for (a = 0; a < longopts[i].argtype; a++)
                 *p++ = ':';
         }
     }
@@ -206,7 +211,8 @@ long_fallback(struct optparse *options,
     if (longindex != NULL) {
         *longindex = -1;
         if (result != -1)
-            for (int i = 0; !longopts_end(longopts, i); i++)
+            int i = 0;
+            for (i = 0; !longopts_end(longopts, i); i++)
                 if (longopts[i].shortname == options->optopt)
                     *longindex = i;
     }
@@ -249,7 +255,8 @@ optparse_long(struct optparse *options,
     options->optarg = NULL;
     option += 2; // skip "--"
     options->optind++;
-    for (int i = 0; !longopts_end(longopts, i); i++) {
+    int i = 0;
+    for (i = 0; !longopts_end(longopts, i); i++) {
         const char *name = longopts[i].longname;
         if (longopts_match(name, option)) {
             if (longindex)
