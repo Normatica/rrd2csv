@@ -159,11 +159,12 @@ optstring_from_long(const struct optparse_long *longopts, char *optstring)
 {
     char *p = optstring;
     int i = 0;
+    unsigned int a = 0;
+    
     for (i = 0; !longopts_end(longopts, i); i++) {
         if (longopts[i].shortname) {
             *p++ = longopts[i].shortname;
 
-            unsigned int a = 0;
             for (a = 0; a < longopts[i].argtype; a++)
                 *p++ = ':';
         }
@@ -208,13 +209,17 @@ long_fallback(struct optparse *options,
 #endif
     optstring_from_long(longopts, optstring);
     int result = optparse(options, optstring);
+    int i = 0;
+
     if (longindex != NULL) {
         *longindex = -1;
-        if (result != -1)
-            int i = 0;
-            for (i = 0; !longopts_end(longopts, i); i++)
-                if (longopts[i].shortname == options->optopt)
+        if (result != -1) {
+            for (i = 0; !longopts_end(longopts, i); i++) {
+                if (longopts[i].shortname == options->optopt){
                     *longindex = i;
+                }
+            }
+        }
     }
 #ifdef _MSC_VER
     free(optstring);
@@ -229,6 +234,8 @@ optparse_long(struct optparse *options,
 {
 //    printf("%i < %i\n",options->optind,options->argc);
     char *option = options_argv(options->optind);
+    int i = 0;
+
     if (option == NULL) {
         return -1;
     } else if (is_dashdash(option)) {
@@ -255,7 +262,7 @@ optparse_long(struct optparse *options,
     options->optarg = NULL;
     option += 2; // skip "--"
     options->optind++;
-    int i = 0;
+    
     for (i = 0; !longopts_end(longopts, i); i++) {
         const char *name = longopts[i].longname;
         if (longopts_match(name, option)) {
